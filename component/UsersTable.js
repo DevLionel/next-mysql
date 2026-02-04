@@ -7,7 +7,7 @@ function UsersTable(){
 						<th>
 							<span className="custom-checkbox">
 								<input type="checkbox" id="selectAll"/>
-								<label for="selectAll"></label>
+								<label htmlFor="selectAll" />
 							</span>
 						</th>
 						<th>Name</th>
@@ -17,11 +17,11 @@ function UsersTable(){
 				</thead>
 				<tbody>
 					<tr>
-                        <input type="hidden" id="userId" name="id" value = "" />
 						<td>
+							<input type="hidden" id="userId" name="id" value = "" />
 							<span className="custom-checkbox">
 								<input type="checkbox" id="data_checkbox" className="data_checkbox" name="data_checkbox" value=""/>
-								<label for="data_checkbox"></label>
+								<label htmlFor="data_checkbox" />
 							</span>
 						</td>
 						<td>Anand Raj</td>
@@ -32,11 +32,11 @@ function UsersTable(){
 						</td>
 					</tr>
 					<tr>
-                        <input type="hidden" id="userId" name="id" value = "" />
 						<td>
+							<input type="hidden" id="userId" name="id" value = "" />
 							<span className="custom-checkbox">
 								<input type="checkbox" id="data_checkbox" className="data_checkbox" name="data_checkbox" value=""/>
-								<label for="data_checkbox"></label>
+								<label htmlFor="data_checkbox"></label>
 							</span>
 						</td>
 						<td>Anand Raj</td>
@@ -47,11 +47,12 @@ function UsersTable(){
 						</td>
 					</tr>
 					<tr>
-                        <input type="hidden" id="userId" name="id" value = "" />
+
 						<td>
+							<input type="hidden" id="userId" name="id" value = "" />
 							<span className="custom-checkbox">
 								<input type="checkbox" id="data_checkbox" className="data_checkbox" name="data_checkbox" value=""/>
-								<label for="data_checkbox"></label>
+								<label htmlFor="data_checkbox"></label>
 							</span>
 						</td>
 						<td>Anand Raj</td>
@@ -62,11 +63,11 @@ function UsersTable(){
 						</td>
 					</tr>
 					<tr>
-                        <input type="hidden" id="userId" name="id" value = "" />
-						<td>
+                        <td>
+							<input type="hidden" id="userId" name="id" value = "" />
 							<span className="custom-checkbox">
 								<input type="checkbox" id="data_checkbox" className="data_checkbox" name="data_checkbox" value=""/>
-								<label for="data_checkbox"></label>
+								<label htmlFor="data_checkbox"></label>
 							</span>
 						</td>
 						<td>Anand Raj</td>
