@@ -29,3 +29,31 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
  
     return NextResponse.json({ user, success: true }, { status: 200 });
 }
+
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string}> }) {
+  try { 
+    
+    const { id } = await context.params;
+
+    const userId = Number(id);
+
+    const body: { username: string; email: string } = await req.json();
+    
+    const { username, email } = body; 
+
+    const result = await prisma.user.update({ 
+      where: { id : userId},
+      data : { username: username, email: email }
+    });
+
+    return NextResponse.json({ result, success: true }, { status: 200 });
+  } 
+  catch (error) {
+  
+    console.error(error);
+    return NextResponse.json(
+      { error: "Failed to update user" },
+      { status: 500 }
+    );
+  }
+}
