@@ -4,9 +4,12 @@ import { prisma } from "../../../lib/prisma";
 export async function GET(req: NextRequest) {
   try {
     const result = await prisma.user.findMany();
+  
     return NextResponse.json(result, { status: 200 });
-  } catch (error) {
-    console.error(error);
+  } 
+  catch (error) {
+      console.error(error);
+  
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 }

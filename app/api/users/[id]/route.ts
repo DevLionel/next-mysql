@@ -1,20 +1,22 @@
 import { prisma } from "../../../../lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string}}){
-    console.log("params", params)
-    const id = Number(params.id);
-    console.log("id", id);
-    if(isNaN(id))
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string}> }) {
+        
+    const { id } = await context.params;
+
+    const userId = Number(id);
+
+    if(isNaN(userId))
     {
       return NextResponse.json(
-      { message: "Invalid ID", id },
-      { status: 400 }
-    );
+        { message: "Invalid ID", id },
+        { status: 400 }
+        );
     }
-
+    
     const user = await prisma.user.findUnique({
-        where : { id }
+        where : { id : userId }
     })
 
     if(!user)
@@ -24,6 +26,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string}}
             { status: 404 }
         )    
     }
-
+ 
     return NextResponse.json({ user, success: true }, { status: 200 });
 }
