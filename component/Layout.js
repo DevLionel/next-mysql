@@ -1,10 +1,17 @@
+"use client";
+
 import Alert from "./Alert"
 import UsersTable from "./UsersTable"
 import Pagination from "./Pagination"
 import Navbar from "./Navbar"
+import AppContext from "../context/appContext"
+import { useContext } from "react"
 
 
 function Layout(){
+
+	const value = useContext(AppContext);
+	
     return(
         <>
             <div id="addEmployeeModal" className="modal fade">
@@ -65,7 +72,7 @@ function Layout(){
         <Alert/>
         <div className="table-wrapper">
             <Navbar />
-            <UsersTable />
+            <UsersTable users = {value.users} />
             <Pagination />
         </div>
     </div>
