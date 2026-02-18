@@ -7,6 +7,7 @@ import Navbar from "./Navbar"
 import AppContext from "../context/appContext"
 import { useState, useContext } from "react"
 import { paginate } from "../helpers/paginate"
+import { search } from "../helpers/search"
 
 
 function Layout(){
@@ -14,15 +15,24 @@ function Layout(){
 	
 	const value = useContext(AppContext);
 	
+	const [searchQuery, setSearchQuery] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
-	const pageSize = 3
+	const pageSize = 3;
 
 	const onPageChange = (page) => {
 		setCurrentPage(page);
 	}
 
-	let paginatedUsers = paginate(value.users, currentPage, pageSize);
+	let searchedResult;
+	let paginatedUsers;
 
+	if (searchQuery.length > 0) {
+		searchedResult = search(value.users, searchQuery);
+		paginatedUsers = paginate(searchedResult, currentPage, pageSize);
+	} 
+	else {
+		paginatedUsers = paginate(value.users, currentPage, pageSize);
+	}
 
     return(
         <>
@@ -83,9 +93,9 @@ function Layout(){
     <div className="table-responsive d-flex flex-column">
         <Alert/>
         <div className="table-wrapper">
-            <Navbar />
+            <Navbar searchQuery = {searchQuery} setSearchQuery={setSearchQuery} />
             <UsersTable users = {paginatedUsers} />
-            <Pagination usersCount = {value.users.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {onPageChange} />
+            <Pagination usersCount = {searchQuery.length > 0 ? searchedResult.length : value.users.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {onPageChange} />
         </div>
     </div>
  </div>            

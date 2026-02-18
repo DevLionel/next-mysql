@@ -8,7 +8,7 @@ const userGenerator = () => {
 			{
 				users.map(user => {
 					return (
-						<User key = {user} user = {user} />
+						<User key = {user.id} user = {user} />
 					)
 				})
 			}
