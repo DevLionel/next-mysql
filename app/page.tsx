@@ -5,7 +5,7 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <HomeClient />;
+  return <HomeClient/>;
 }
 
 

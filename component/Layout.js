@@ -5,13 +5,25 @@ import UsersTable from "./UsersTable"
 import Pagination from "./Pagination"
 import Navbar from "./Navbar"
 import AppContext from "../context/appContext"
-import { useContext } from "react"
+import { useState, useContext } from "react"
+import { paginate } from "../helpers/paginate"
 
 
 function Layout(){
 
+	
 	const value = useContext(AppContext);
 	
+	const [currentPage, setCurrentPage] = useState(1);
+	const pageSize = 3
+
+	const onPageChange = (page) => {
+		setCurrentPage(page);
+	}
+
+	let paginatedUsers = paginate(value.users, currentPage, pageSize);
+
+
     return(
         <>
             <div id="addEmployeeModal" className="modal fade">
@@ -72,8 +84,8 @@ function Layout(){
         <Alert/>
         <div className="table-wrapper">
             <Navbar />
-            <UsersTable users = {value.users} />
-            <Pagination />
+            <UsersTable users = {paginatedUsers} />
+            <Pagination usersCount = {value.users.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {onPageChange} />
         </div>
     </div>
  </div>            
