@@ -14,6 +14,7 @@ const User: React.FC<UserProps> = ({ user }) => {
   return (
     <tr>
       <td>
+      <a data-bs-target="#addEmployeeModel" className="add" data-bs-toggle="modal"></a>
         <input type="hidden" name="id" value={user.id} />
 
         <span className="custom-checkbox">
@@ -32,20 +33,20 @@ const User: React.FC<UserProps> = ({ user }) => {
       <td>{user.email}</td>
 
       <td>
-        <a href="#editEmployeeModal" className="edit" data-toggle="modal">
+        <a data-bs-target="#editEmployeeModal" className="edit" data-bs-toggle="modal">
           <i
             className="material-icons"
-            data-toggle="tooltip"
+            data-bs-toggle="tooltip"
             title="Edit"
           >
             &#xE254;
           </i>
         </a>
 
-        <a href="#deleteEmployeeModal" className="delete" data-toggle="modal">
+        <a data-bs-target="#deleteEmployeeModal" className="delete" data-bs-toggle="modal">
           <i
             className="material-icons"
-            data-toggle="tooltip"
+            data-bs-toggle="tooltip"
             title="Delete"
           >
             &#xE872;

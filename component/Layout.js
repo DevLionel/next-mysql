@@ -14,14 +14,15 @@ function Layout(){
 
 	
 	const value = useContext(AppContext);
-	
 	const [searchQuery, setSearchQuery] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 3;
-
+	
 	const onPageChange = (page) => {
 		setCurrentPage(page);
 	}
+
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	let searchedResult;
 	let paginatedUsers;
@@ -55,7 +56,7 @@ function Layout(){
 					        	</div>
 							</div>				
 				            <div className="modal-footer">
-					            <input type="button" className="btn btn-default" name="submit" data-dismiss="modal" value="Cancel"/>
+					            <input type="button" className="btn btn-default addCancel" name="submit" data-dismiss="modal" value="Cancel"/>
 					            <input type="submit" className="btn btn-success" value="Add"/>
 				            </div>
 			            </form>
@@ -93,7 +94,7 @@ function Layout(){
     <div className="table-responsive d-flex flex-column">
         <Alert/>
         <div className="table-wrapper">
-            <Navbar searchQuery = {searchQuery} setSearchQuery={setSearchQuery} />
+            <Navbar searchQuery = {searchQuery} setSearchQuery={setSearchQuery} onAddClick={() => setIsModalOpen(true)}/>
             <UsersTable users = {paginatedUsers} />
             <Pagination usersCount = {searchQuery.length > 0 ? searchedResult.length : value.users.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {onPageChange} />
         </div>
