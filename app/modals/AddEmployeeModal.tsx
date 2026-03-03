@@ -8,6 +8,7 @@ type Props = {
 };
 
 const AddEmployeeModal = ({ onClose, onSave }: Props) => {
+    const [myUsers, setMyUsers] = useState([]);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
 
@@ -19,7 +20,7 @@ const AddEmployeeModal = ({ onClose, onSave }: Props) => {
 
         // Send data to parent or API
         onSave({ username, email });
-
+        
         // Optional: reset fields
         setUsername("");
         setEmail("");
@@ -42,6 +43,7 @@ const AddEmployeeModal = ({ onClose, onSave }: Props) => {
                 className="form-control mb-2"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                
             />
             
             <input
@@ -53,7 +55,7 @@ const AddEmployeeModal = ({ onClose, onSave }: Props) => {
             />
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
-                <button className="btn btn-primary" onClick={handleSave}>Save</button>
+                <button className="btn btn-success" onClick={handleSave}>Save</button>
                 <button className="btn btn-secondary" onClick={onClose}>
                 Cancel
                 </button>

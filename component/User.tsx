@@ -14,7 +14,7 @@ const User: React.FC<UserProps> = ({ user }) => {
   return (
     <tr>
       <td>
-      <a data-bs-target="#addEmployeeModel" className="add" data-bs-toggle="modal"></a>
+      <a data-bs-target="#addEmployeeModal" className="add" data-bs-toggle="modal"></a>
         <input type="hidden" name="id" value={user.id} />
 
         <span className="custom-checkbox">

@@ -24,12 +24,11 @@ export async function POST(req: NextRequest) {
     
     const { username, email } = body; 
 
-    const result = await prisma.user.create({ 
+    const newUser = await prisma.user.create({ 
       data : { username, email }, 
-      select : { id : true }
     });
 
-    return NextResponse.json({ result, success: true }, { status: 201 });
+    return NextResponse.json({ newUser, status: 201 });
   } 
   catch (error) {
   
