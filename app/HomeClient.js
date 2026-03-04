@@ -18,7 +18,15 @@ export default function HomeClient() {
   const [showEditEmployeeAlert, setShowEditEmployeeAlert] = useState(false);
   const [showDeleteEmployeeAlert, setShowDeleteEmployeeAlert] = useState(false);
   const [myUsers, setMyUsers] = useState([]);
+  const [checkedUserIds, setCheckedUserIds] = useState([])
  
+  // fetch users
+  useEffect(() => {
+    fetch("/api/users")
+      .then(res => res.json())
+      .then(data => setMyUsers(data));
+  }, []);
+
   const handleSaveEmployee = async (data) => {
     const response = await fetch("/api/users", {
           method: "POST",
@@ -52,11 +60,7 @@ export default function HomeClient() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
-  useEffect(() => {
-    fetch("/api/users")
-      .then(res => res.json())
-      .then(data => setMyUsers(data));
-  }, []);
+ 
 
   let searchedResult;
   let paginatedUsers;
@@ -147,9 +151,13 @@ export default function HomeClient() {
           )}
 
           <Navbar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onAddClick={() => setIsModalOpen(true)}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onAddClick={() => setIsModalOpen(true)}
+            checkedUserIds={checkedUserIds || []}
+            setCheckedUserIds={setCheckedUserIds}
+            myUsers={myUsers || []}
+            handleDeleteUser={handleDeleteUser}
           />
 
           {isModalOpen && (
@@ -187,10 +195,12 @@ export default function HomeClient() {
               setUserToDelete(user);
               setIsDeleteModalOpen(true);    
             }}
-            onEditClick= {(user) => {
+              onEditClick= {(user) => {
               setUserToEdit(user);
               setIsEditModalOpen(true);
             }}
+            checkedUserIds={checkedUserIds}
+            setCheckedUserIds={setCheckedUserIds}
            />
           <Pagination usersCount = {searchQuery.length > 0 ? searchedResult.length : myUsers.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {setCurrentPage} />
           </AppContext.Provider>

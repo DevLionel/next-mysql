@@ -1,7 +1,7 @@
 import React from "react";
 
 export type UserType = {
-  id: number | string;
+  id: number;
   username: string;
   email: string;
 };
@@ -10,9 +10,11 @@ type UserProps = {
   user: UserType;
   onDeleteClick: (user: UserType) => void;
   onEditClick: (user: UserType) => void;
+  isChecked: boolean;         
+  onCheckboxChange: () => void; 
 };
 
-const User: React.FC<UserProps> = ({ user, onEditClick, onDeleteClick }) => {
+const User: React.FC<UserProps> = ({ user, isChecked, onCheckboxChange, onEditClick, onDeleteClick }) => {
   return (
     <tr>
       <td>
@@ -26,6 +28,8 @@ const User: React.FC<UserProps> = ({ user, onEditClick, onDeleteClick }) => {
             className="data_checkbox"
             name="data_checkbox"
             value={user.id}
+            checked={isChecked}
+            onChange={onCheckboxChange}
           />
           <label htmlFor={`data_checkbox_${user.id}`} />
         </span>

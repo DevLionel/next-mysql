@@ -1,14 +1,23 @@
 "use client";
 
 import React from "react";
+import type { UserType } from "./User";
 
 type NavbarProps = {
   searchQuery: string;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   onAddClick: () => void;
+  checkedUserIds: Number[];
+  setCheckedUserIds: React.Dispatch<React.SetStateAction<number[]>>; 
+  myUsers: UserType[];
+  handleDeleteUser: (userId: number) => void;
 };
 
-const Navbar = ({ searchQuery, setSearchQuery, onAddClick }: NavbarProps) => {
+const Navbar = ({ searchQuery, checkedUserIds, myUsers, handleDeleteUser, setCheckedUserIds, setSearchQuery, onAddClick }: NavbarProps) => {
+  const handleBulkDelete = () => {
+    checkedUserIds.forEach(id => handleDeleteUser(Number(id)));
+    setCheckedUserIds([]);
+  };
   return (
     <div className="table-title">
       <div className="row align-items-center">
@@ -26,9 +35,12 @@ const Navbar = ({ searchQuery, setSearchQuery, onAddClick }: NavbarProps) => {
             Add New Employee
           </button>
 
-          <button className="delete_all_data btn btn-danger">
-            <i className="material-icons">&#xE15C;</i>
-             Delete
+          <button className="delete_all_data btn btn-danger"
+            onClick={handleBulkDelete}
+            disabled={checkedUserIds.length === 0}
+          >
+          <i className="material-icons">&#xE15C;</i>
+            Delete
           </button>
 
           <input
