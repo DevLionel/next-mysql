@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../component/Navbar";
 import AddEmployeeModal from "./modals/AddEmployeeModal";
 import DeleteEmployeeModal from "./modals/DeleteEmployeeModal";
+import EditEmployeeModal from "./modals/EditEmployeeModal";
 import User from "../component/User";
 import AppContext from "../context/appContext";
 import UsersTable from "../component/UsersTable";
@@ -14,6 +15,7 @@ import Alert from "../component/Alert";
 
 export default function HomeClient() {
   const [showAddEmployeeAlert, setShowAddEmployeeAlert] = useState(false);
+  const [showEditEmployeeAlert, setShowEditEmployeeAlert] = useState(false);
   const [showDeleteEmployeeAlert, setShowDeleteEmployeeAlert] = useState(false);
   const [myUsers, setMyUsers] = useState([]);
  
@@ -45,6 +47,8 @@ export default function HomeClient() {
   const [searchQuery, setSearchQuery] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 10;
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
@@ -64,6 +68,32 @@ export default function HomeClient() {
     else {
       paginatedUsers = paginate(myUsers, currentPage, pageSize);
     }
+
+    const handleEditUser = async (userId, data) => {
+    const response = await fetch(`/api/users/${userId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+     });
+
+    const responseData = await response.json();
+    const editUser = responseData.result;
+    console.log(editUser);
+
+    if (!editUser?.id || !editUser?.username || !editUser?.email) {
+      console.error("Invalid user object:", editUser);
+    return;
+    }
+
+    setMyUsers((prev) =>
+    prev.map((u) => (u.id === editUser.id ? editUser : u)));
+
+    // Show alert
+    setShowEditEmployeeAlert(true);
+
+    // Automatically hide after 10 seconds
+    setTimeout(() => setShowEditEmployeeAlert(false), 10000);
+    };
   
   const handleDeleteUser = async (userId) => {
   // Optional: call API to delete
@@ -100,6 +130,14 @@ export default function HomeClient() {
             />
           )}
 
+          {showEditEmployeeAlert && (
+            <Alert
+              message="User edited successfully!"
+              type="success"
+              onClose={() => setShowEditEmployeeAlert(false)}
+            />
+          )}
+
           {showDeleteEmployeeAlert && (
             <Alert
               message="User deleted successfully!"
@@ -119,6 +157,20 @@ export default function HomeClient() {
             onSave={handleSaveEmployee} />
           )}
 
+          {isEditModalOpen && userToEdit && (
+            <EditEmployeeModal
+            initialUsername={userToEdit.username}
+            initialEmail={userToEdit.email}
+            userId={userToEdit.id}
+            onClose={() => {
+              setUserToEdit(null);
+              setIsEditModalOpen(false);
+              }}
+            onEdit={handleEditUser}
+          />
+          )}
+
+
           {isDeleteModalOpen && userToDelete && (
             <DeleteEmployeeModal
             username={userToDelete.username}
@@ -134,6 +186,10 @@ export default function HomeClient() {
             onDeleteClick= {(user) => {
               setUserToDelete(user);
               setIsDeleteModalOpen(true);    
+            }}
+            onEditClick= {(user) => {
+              setUserToEdit(user);
+              setIsEditModalOpen(true);
             }}
            />
           <Pagination usersCount = {searchQuery.length > 0 ? searchedResult.length : myUsers.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {setCurrentPage} />

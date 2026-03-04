@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
       data : { username: username, email: email }
     });
 
-    return NextResponse.json({ result, success: true }, { status: 200 });
+    return NextResponse.json({ result }, { status: 200 });
   } 
   catch (error) {
   

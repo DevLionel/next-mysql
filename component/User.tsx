@@ -9,11 +9,10 @@ export type UserType = {
 type UserProps = {
   user: UserType;
   onDeleteClick: (user: UserType) => void;
+  onEditClick: (user: UserType) => void;
 };
 
-
-
-const User: React.FC<UserProps> = ({ user, onDeleteClick }) => {
+const User: React.FC<UserProps> = ({ user, onEditClick, onDeleteClick }) => {
   return (
     <tr>
       <td>
@@ -36,7 +35,7 @@ const User: React.FC<UserProps> = ({ user, onDeleteClick }) => {
       <td>{user.email}</td>
 
       <td>
-        <a data-bs-target="#editEmployeeModal" className="edit" data-bs-toggle="modal">
+        <a className="edit" style={{ cursor : "pointer" }} onClick={() => onEditClick(user)}>
           <i
             className="material-icons"
             data-bs-toggle="tooltip"

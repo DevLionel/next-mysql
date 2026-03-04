@@ -4,9 +4,10 @@ import type { UserType } from "../component/User";
 type Props = {
   users: UserType[];
   onDeleteClick: (user: UserType) => void;
+  onEditClick: (user: UserType) => void;
 };
 
-function UsersTable({ users, onDeleteClick }: Props) {
+function UsersTable({ users, onEditClick, onDeleteClick }: Props) {
 
   const userGenerator = () => {
     return (
@@ -16,6 +17,7 @@ function UsersTable({ users, onDeleteClick }: Props) {
             <User 
               key={user.id} 
               user={user} 
+              onEditClick={onEditClick}
               onDeleteClick={onDeleteClick}
             />
           );
