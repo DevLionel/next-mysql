@@ -35,10 +35,10 @@ export default function HomeClient() {
     setMyUsers((prev) => [...prev, newUser]);
 
     // Show alert
-    setShowAlert(true);
+    setShowAddEmployeeAlert(true);
 
     // Automatically hide after 10 seconds
-    setTimeout(() => setShowAlert(false), 10000);
+    setTimeout(() => setShowAddEmployeeAlert(false), 10000);
     };
     
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,6 +73,12 @@ export default function HomeClient() {
   setMyUsers((prev) => prev.filter((user) => user.id !== userId));
 
   setIsDeleteModalOpen(false);
+
+  // Show alert
+  setShowDeleteEmployeeAlert(true);
+
+  // Automatically hide after 10 seconds
+  setTimeout(() => setShowDeleteEmployeeAlert(false), 10000);
 };
 
   return (
@@ -131,7 +137,6 @@ export default function HomeClient() {
             }}
            />
           <Pagination usersCount = {searchQuery.length > 0 ? searchedResult.length : myUsers.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {setCurrentPage} />
-          
           </AppContext.Provider>
         </main>
       </div>
