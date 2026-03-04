@@ -30,7 +30,7 @@ const Alert: React.FC<AlertProps> = ({
       className={`alert alert-${type} alert-dismissible fade show`}
       role="alert"
       style={{
-        margin: "25px auto",
+        margin: "10px auto 40px auto",
         maxWidth: "600px", // center & fit nicely
       }}
     >
