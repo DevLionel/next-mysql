@@ -43,7 +43,6 @@ const AddEmployeeModal = ({ onClose, onSave }: Props) => {
                 className="form-control mb-2"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                
             />
             
             <input

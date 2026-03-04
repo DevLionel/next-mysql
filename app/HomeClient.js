@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../component/Navbar";
 import AddEmployeeModal from "./modals/AddEmployeeModal";
+import DeleteEmployeeModal from "./modals/DeleteEmployeeModal";
+import User from "../component/User";
 import AppContext from "../context/appContext";
 import UsersTable from "../component/UsersTable";
 import { paginate } from "../helpers/paginate";
@@ -11,8 +13,10 @@ import Pagination from "../component/Pagination";
 import Alert from "../component/Alert";
 
 export default function HomeClient() {
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAddEmployeeAlert, setShowAddEmployeeAlert] = useState(false);
+  const [showDeleteEmployeeAlert, setShowDeleteEmployeeAlert] = useState(false);
   const [myUsers, setMyUsers] = useState([]);
+ 
   const handleSaveEmployee = async (data) => {
     const response = await fetch("/api/users", {
           method: "POST",
@@ -36,11 +40,13 @@ export default function HomeClient() {
     // Automatically hide after 10 seconds
     setTimeout(() => setShowAlert(false), 10000);
     };
+    
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
-	const pageSize = 3;
-  
+	const pageSize = 10;
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
     fetch("/api/users")
@@ -58,6 +64,16 @@ export default function HomeClient() {
     else {
       paginatedUsers = paginate(myUsers, currentPage, pageSize);
     }
+  
+  const handleDeleteUser = async (userId) => {
+  // Optional: call API to delete
+  await fetch(`/api/users/${userId}`, { method: "DELETE" });
+
+  // Remove from local state
+  setMyUsers((prev) => prev.filter((user) => user.id !== userId));
+
+  setIsDeleteModalOpen(false);
+};
 
   return (
     <>
@@ -70,13 +86,22 @@ export default function HomeClient() {
               setMyUsers: setMyUsers,
             }}
           >
-          {showAlert && (
+          {showAddEmployeeAlert && (
             <Alert
               message="User added successfully!"
               type="success"
-              onClose={() => setShowAlert(false)}
+              onClose={() => setShowAddEmployeeAlert(false)}
             />
           )}
+
+          {showDeleteEmployeeAlert && (
+            <Alert
+              message="User deleted successfully!"
+              type="success"
+              onClose={() => setShowDeleteEmployeeAlert(false)}
+            />
+          )}
+
           <Navbar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -88,7 +113,23 @@ export default function HomeClient() {
             onSave={handleSaveEmployee} />
           )}
 
-          <UsersTable users = {paginatedUsers} />
+          {isDeleteModalOpen && userToDelete && (
+            <DeleteEmployeeModal
+            username={userToDelete.username}
+            onClose={() => {
+            setUserToDelete(null);
+          }}
+          onDelete={() => handleDeleteUser(userToDelete.id)}
+          />
+          )}
+
+          <UsersTable 
+            users = {paginatedUsers}
+            onDeleteClick= {(user) => {
+              setUserToDelete(user);
+              setIsDeleteModalOpen(true);    
+            }}
+           />
           <Pagination usersCount = {searchQuery.length > 0 ? searchedResult.length : myUsers.length} currentPage = {currentPage} pageSize = {pageSize} onPageChange = {setCurrentPage} />
           
           </AppContext.Provider>

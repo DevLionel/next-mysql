@@ -1,6 +1,6 @@
 import React from "react";
 
-type UserType = {
+export type UserType = {
   id: number | string;
   username: string;
   email: string;
@@ -8,9 +8,12 @@ type UserType = {
 
 type UserProps = {
   user: UserType;
+  onDeleteClick: (user: UserType) => void;
 };
 
-const User: React.FC<UserProps> = ({ user }) => {
+
+
+const User: React.FC<UserProps> = ({ user, onDeleteClick }) => {
   return (
     <tr>
       <td>
@@ -43,7 +46,7 @@ const User: React.FC<UserProps> = ({ user }) => {
           </i>
         </a>
 
-        <a data-bs-target="#deleteEmployeeModal" className="delete" data-bs-toggle="modal">
+        <a className="delete" style={{ cursor : "pointer" }} onClick={() => onDeleteClick(user)}>
           <i
             className="material-icons"
             data-bs-toggle="tooltip"

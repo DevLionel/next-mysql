@@ -56,36 +56,29 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
     );
   }
 }
-    
-export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string}> }) {
 
-    const { id } = await context.params;
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  const userId = Number(id);
 
-    const userId = Number(id);
+  if (isNaN(userId)) {
+    return NextResponse.json({ message: "Invalid ID", id }, { status: 400 });
+  }
 
-    const body: { username: string; email: string } = await req.json();
-        
-    const { username, email } = body;     
-    
-    if(isNaN(userId))
-    {
-        return NextResponse.json(
-            { message: "Invalid ID", id },
-            { status: 400 }
-            );
+  try {
+    // Safe delete using deleteMany (won't throw if user doesn't exist)
+    const deleted = await prisma.user.deleteMany({
+      where: { id: userId },
+    });
+
+    if (deleted.count === 0) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
-        
-    const user = await prisma.user.delete({
-        where : { id : userId }
-    })
 
-    if(!user)
-    {
-        return NextResponse.json(
-            { message: "User not found" },
-            { status: 404 }
-       )    
-    }
- 
-    return NextResponse.json({ user, success: true }, { status: 200 });
+    return NextResponse.json({ message: "User deleted successfully", success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error", success: false }, { status: 500 });
+  }
 }
+
