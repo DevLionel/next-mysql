@@ -55,7 +55,6 @@ const EditEmployeeModal = ({ onClose, onEdit, initialUsername, initialEmail, use
                 />
 
                 <div className="mb-3">
-                    <label className="form-label">Email</label>
                     <input
                         type="email"
                         className={`form-control ${invalidField === "email" ? "is-invalid" : ""}`}

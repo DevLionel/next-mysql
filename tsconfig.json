@@ -6,6 +6,7 @@
     // "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     },
@@ -16,6 +17,7 @@
     "esModuleInterop": true,
     "ignoreDeprecations": "5.0",
     "types": [],
+    "typeRoots": ["./node_modules/@types", "./generated/prisma"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

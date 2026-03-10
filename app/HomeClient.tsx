@@ -31,80 +31,100 @@ export default function HomeClient() {
   const [showAddAlert, setShowAddAlert] = useState(false);
   const [showEditAlert, setShowEditAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
-
   const [showBulkDeleteAlert, setShowBulkDeleteAlert] = useState(false);
 
   // Fetch users
   useEffect(() => {
-    fetch("/api/users")
-      .then(res => res.json())
-      .then((data: UserType[]) => setUsers(data))
-      .catch(err => console.error(err));
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/users", { cache: "no-store" });
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Fetch error:", text);
+          return;
+        }
+        const data: UserType[] = await res.json();
+        setUsers(data);
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      }
+    };
+    fetchUsers();
   }, [setUsers]);
 
-  // Set current page
+  // Reset page when search changes
   useEffect(() => {
-  setCurrentPage(1); // reset to page 1 whenever search query changes
+    setCurrentPage(1);
   }, [searchQuery]);
 
-  // Add new user
+  // Add user
   const handleSaveEmployee = async (data: { username: string; email: string }) => {
-    // Client-side duplicate check
     if (users.some(u => u.email === data.email)) {
       alert("This email address is already used.");
-    return;
+      return;
     }
-    
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    
-    if (!res.ok) {
-     alert("Failed to add user");
-    return;
-    }
-    
-    const result = await res.json();
-    const newUser: UserType = result.newUser;
-    if (!newUser?.id) return;
 
-    setUsers(prev => [...prev, newUser]);
-    setShowAddAlert(true);
-    setTimeout(() => setShowAddAlert(false), 5000);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("POST error:", text);
+        alert("Failed to add user");
+        return;
+      }
+
+      const result = await res.json();
+      const newUser: UserType = result.newUser;
+      setUsers(prev => [...prev, newUser]);
+      setShowAddAlert(true);
+      setTimeout(() => setShowAddAlert(false), 5000);
+    } catch (err) {
+      console.error("POST failed:", err);
+      alert("Failed to add user");
+    }
   };
 
   // Edit user
   const handleEditUser = async (userId: number, data: { username: string; email: string }) => {
-    // Client-side duplicate check (ignore current user)
     if (users.some(u => u.email === data.email && u.id !== userId)) {
       alert("This email address is already used.");
-    return;
+      return;
     }
-    
-    const res = await fetch(`/api/users/${userId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    
-    if (!res.ok) {
-      alert("Failed to edit user");
-    return;
-    }
-    
-    const result = await res.json();
-    const updatedUser: UserType = result.result;
 
-    setUsers(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
-    setShowEditAlert(true);
-    setTimeout(() => setShowEditAlert(false), 5000);
+    try {
+      const res = await fetch(`/api/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("PUT error:", text);
+        alert("Failed to edit user");
+        return;
+      }
+
+      const result = await res.json();
+      const updatedUser: UserType = result.result;
+      setUsers(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
+      setShowEditAlert(true);
+      setTimeout(() => setShowEditAlert(false), 5000);
+    } catch (err) {
+      console.error("PUT failed:", err);
+      alert("Failed to edit user");
+    }
   };
 
+  // Delete user
   const handleDeleteClick = async (user: UserType) => {
     setUserToDelete(user);
-    setIsDeleteModalOpen(true); // open modal
+    setIsDeleteModalOpen(true);
   };
 
   // Pagination + search
@@ -135,10 +155,9 @@ export default function HomeClient() {
               setTimeout(() => setShowBulkDeleteAlert(false), 5000);
             }}
           />
+
           {/* Modals */}
-          {isAddModalOpen && <AddEmployeeModal onClose={() => setIsAddModalOpen(false)} 
-              onSave={handleSaveEmployee} 
-              existingUsers={users} />}
+          {isAddModalOpen && <AddEmployeeModal onClose={() => setIsAddModalOpen(false)} onSave={handleSaveEmployee} existingUsers={users} />}
           {isEditModalOpen && userToEdit && (
             <EditEmployeeModal
               userId={userToEdit.id}
@@ -179,7 +198,7 @@ export default function HomeClient() {
 
           {/* Pagination */}
           <Pagination
-            usersCount={filteredUsers.length} // total items after search
+            usersCount={filteredUsers.length}
             currentPage={currentPage}
             pageSize={pageSize}
             onPageChange={setCurrentPage}

@@ -2,6 +2,7 @@
   "name": "next-mysql",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +11,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.0",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.2.4",
@@ -19,25 +20,18 @@
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
-  "engines": {
-  "node": "20.x",
-  "npm": "10.x"
-  },
   "devDependencies": {
-    "@types/node": "^25.2.3",
+    "@types/node": "^20.5.0",
     "@types/pg": "^8.16.0",
-    "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^9.0.0",
     "eslint-config-next": "16.1.4",
     "prisma": "^7.4.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
-  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module"
-
+  "engines": {
+    "node": "20.x",
+    "npm": "10.x"
+  }
 }
