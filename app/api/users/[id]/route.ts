@@ -1,6 +1,6 @@
 import { prisma } from "../../../../lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import type { NextApiResponse } from "next";
+
 
 export async function GET(req: NextRequest, context: { params: Promise<{ id: string}> }) {
         
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
     return NextResponse.json({ user, success: true }, { status: 200 });
 }
 
-export async function PUT(req: NextRequest, res: NextApiResponse, context: { params: Promise<{ id: string}> }) {
+export async function PUT(req: NextRequest, res: NextResponse, context: { params: Promise<{ id: string}> }) {
   try { 
     const { id } = await context.params;
 
@@ -42,13 +42,13 @@ export async function PUT(req: NextRequest, res: NextApiResponse, context: { par
     const { username, email } = body; 
 
     if (!username || !email) {
-      return res.status(400).json({ error: "Username and email are required" });
+      return NextResponse.json( { error: "Username and email are required" }, { status: 400});
     }
 
     // Optional: Regex email check
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Invalid email address" });
+      return NextResponse.json( { error: "Invalid email address" }, { status: 400}, );
     }
 
     const result = await prisma.user.update({ 
@@ -62,7 +62,7 @@ export async function PUT(req: NextRequest, res: NextApiResponse, context: { par
     console.error(error);
 
     if (error.code === "P2002") {
-        return res.status(409).json({ error: "Email already exists" });
+        return NextResponse.json({ error: "Email already exists" }, { status: 409});
       }
 
     return NextResponse.json(
