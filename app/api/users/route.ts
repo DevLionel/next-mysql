@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { NextApiResponse } from "next";
 import { prisma } from "../../../lib/prisma";
 
 
@@ -20,7 +19,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
   try { 
     
     const body: { username: string; email: string } = await req.json();
@@ -29,12 +28,12 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
 
     
     if (!username || !email) {
-      return res.status(400).json({ error: "Username and email are required" });
+      return NextResponse.json({ error: "Username and email are required" }, { status: 400});
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Invalid email address" });
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 
     const newUser = await prisma.user.create({ 
@@ -47,7 +46,7 @@ export async function POST(req: NextRequest, res: NextApiResponse) {
     console.error(error);
     
     if (error.code === "P2002") { // Prisma unique constraint failed
-        return res.status(409).json({ error: "Email already exists" });
+        return NextResponse.json({ error: "Email already exists" }, { status : 409});
     }
 
     return NextResponse.json(
