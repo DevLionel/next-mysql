@@ -20,7 +20,7 @@
     "react-dom": "19.2.3"
   },
   "engines": {
-  "nodes": "20.x",
+  "node": "20.x",
   "npm": "10.x"
   },
   "devDependencies": {
