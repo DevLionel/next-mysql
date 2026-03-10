@@ -6,6 +6,9 @@
     // "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
+    "paths": {
+      "@/*": ["./*"]
+    },
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2023",

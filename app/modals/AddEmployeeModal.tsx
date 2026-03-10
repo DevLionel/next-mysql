@@ -1,20 +1,39 @@
 "use client";
 
 import React, { useState } from "react";
+import { isValidEmail, isDuplicateEmail } from "@/helpers/validation";
+import type { UserType } from "@/app/types/user";
 
 type Props = {
     onClose: () => void;
     onSave: (data: { username: string; email: string }) => void;
+    existingUsers: UserType[];
 };
 
-const AddEmployeeModal = ({ onClose, onSave }: Props) => {
+const AddEmployeeModal = ({ onClose, onSave, existingUsers }: Props) => {
     const [myUsers, setMyUsers] = useState([]);
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [invalidField, setInvalidField] = useState<"email" | "username" | null>(null);
 
     const handleSave = () => {
-        if (!username || !email) {
-            alert("Please fill in all fields");
+        if (!username.trim() || !email.trim()) {
+            setError("All fields are required.");
+            setInvalidField(!username.trim() ? "username" : "email");
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            setError("Please enter a valid email address.");
+            setInvalidField("email");
+            return;
+        }
+
+         // Check for duplicates
+        if (isDuplicateEmail(email, existingUsers)) {
+            setError("This email address is already used.");
+            setInvalidField("email");
             return;
         }
 
@@ -30,6 +49,7 @@ const AddEmployeeModal = ({ onClose, onSave }: Props) => {
 
 
     return (
+        
         <div className="modal-backdrop-custom" onClick={onClose}>
         <div 
             className="modal-content-custom"
@@ -40,18 +60,22 @@ const AddEmployeeModal = ({ onClose, onSave }: Props) => {
             <input
                 type="text"
                 placeholder="Username"
-                className="form-control mb-2"
+                className={`form-control mb-2 ${invalidField === "username" ? "is-invalid" : ""}`}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
             />
             
-            <input
-                type="text"
-                placeholder="Email"
-                className="form-control mb-2"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="mb-3">
+                <label className="form-label">Email</label>
+                <input
+                    type="email"
+                    className={`form-control ${invalidField === "email" ? "is-invalid" : ""}`}
+                    placeholder="Email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                />
+                {invalidField === "email" && <div className="invalid-feedback">{error}</div>}
+            </div>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
                 <button className="btn btn-success" onClick={handleSave}>Save</button>

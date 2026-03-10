@@ -1,66 +1,69 @@
-import React from "react";
+"use client";
 
-export type UserType = {
-  id: number;
-  username: string;
-  email: string;
-};
+import React from "react";
+import type { UserType } from "@/app/types/user";
+import useAppContext from "@/context/useAppContext";
 
 type UserProps = {
   user: UserType;
-  onDeleteClick: (user: UserType) => void;
-  onEditClick: (user: UserType) => void;
-  isChecked: boolean;         
-  onCheckboxChange: () => void; 
+  isChecked: boolean;
+  setCheckedUserIds: React.Dispatch<React.SetStateAction<number[]>>;
+  onEditClick: (user: UserType) => void; // still pass edit click for modal
+  onDeleteClick: (user: UserType) => void; 
 };
 
-const User: React.FC<UserProps> = ({ user, isChecked, onCheckboxChange, onEditClick, onDeleteClick }) => {
+export default function User({ user, isChecked, setCheckedUserIds, onEditClick, onDeleteClick }: UserProps) {
+  const { users, setUsers } = useAppContext(); // ✅ access users directly from context
+
+  // Toggle checkbox for this user
+  const handleCheckboxChange = () => {
+    if (isChecked) {
+      setCheckedUserIds((prev) => prev.filter((id) => id !== user.id));
+    } else {
+      setCheckedUserIds((prev) => [...prev, user.id]);
+    }
+  };
+
+  // Delete user directly via context
+  const handleDelete = () => {
+    setUsers(users.filter((u) => u.id !== user.id));
+  };
+
   return (
     <tr>
       <td>
-      <a data-bs-target="#addEmployeeModal" className="add" data-bs-toggle="modal"></a>
-        <input type="hidden" name="id" value={user.id} />
-
         <span className="custom-checkbox">
           <input
             type="checkbox"
-            id={`data_checkbox_${user.id}`}
-            className="data_checkbox"
-            name="data_checkbox"
-            value={user.id}
+            id={`checkbox_${user.id}`}
             checked={isChecked}
-            onChange={onCheckboxChange}
+            onChange={handleCheckboxChange}
           />
-          <label htmlFor={`data_checkbox_${user.id}`} />
+          <label htmlFor={`checkbox_${user.id}`} />
         </span>
       </td>
-
       <td>{user.username}</td>
       <td>{user.email}</td>
-
       <td>
-        <a className="edit" style={{ cursor : "pointer" }} onClick={() => onEditClick(user)}>
-          <i
-            className="material-icons"
-            data-bs-toggle="tooltip"
-            title="Edit"
-          >
+        <a
+          className="edit"
+          style={{ cursor: "pointer" }}
+          onClick={() => onEditClick(user)}
+        >
+          <i className="material-icons" title="Edit">
             &#xE254;
           </i>
         </a>
-
-        <a className="delete" style={{ cursor : "pointer" }} onClick={() => onDeleteClick(user)}>
-          <i
-            className="material-icons"
-            data-bs-toggle="tooltip"
-            title="Delete"
-          >
-            &#xE872;
+        <a
+          className="delete"
+          style={{ cursor: "pointer" }}
+          onClick={() => onDeleteClick(user)}
+        >
+          <i className="material-icons" title="Delete">
+          &#xE872;
           </i>
         </a>
       </td>
     </tr>
   );
-};
-
-export default User;
+}

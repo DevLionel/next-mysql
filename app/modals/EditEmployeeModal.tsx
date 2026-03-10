@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { isValidEmail, isDuplicateEmail } from "@/helpers/validation";
+import type { UserType } from "@/app/types/user";
+
 
 type Props = {
     onClose: () => void;
@@ -8,13 +11,28 @@ type Props = {
     initialUsername: string;
     initialEmail: string;
     userId: number;
+    existingUsers: UserType[];
 };
 
-const EditEmployeeModal = ({ onClose, onEdit, initialUsername, initialEmail, userId }: Props) => {
+const EditEmployeeModal = ({ onClose, onEdit, initialUsername, initialEmail, userId, existingUsers }: Props) => {
     const [username, setUsername] = useState(initialUsername);
     const [email, setEmail] = useState(initialEmail);
+    const [error, setError] = useState<string | null>(null);
+    const [invalidField, setInvalidField] = useState<"email" | "username" | null>(null);
 
     const handleEdit = () => {
+
+    if (!isValidEmail(email)) {
+        setError("Please enter a valid email address.");
+        setInvalidField("email");
+        return;
+    }
+    
+    if (isDuplicateEmail(email, existingUsers, userId)) {
+        setError("This email address is already used.");
+        setInvalidField("email");
+        return;
+    }
         // Call the parent's edit function
         onEdit(userId, {username, email });
        
@@ -36,13 +54,17 @@ const EditEmployeeModal = ({ onClose, onEdit, initialUsername, initialEmail, use
                 onChange={(e) => setUsername(e.target.value)}
                 />
 
-                <input
-                type="text"
-                className="form-control mb-2"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                />
-
+                <div className="mb-3">
+                    <label className="form-label">Email</label>
+                    <input
+                        type="email"
+                        className={`form-control ${invalidField === "email" ? "is-invalid" : ""}`}
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                    />
+                    {invalidField === "email" && <div className="invalid-feedback">{error}</div>}
+                </div>
+                
                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "15px" }}>
                     <button className="btn btn-success" onClick={handleEdit}>Save</button>
                     <button className="btn btn-secondary" onClick={onClose}>Cancel</button>

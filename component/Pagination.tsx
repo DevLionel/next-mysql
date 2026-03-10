@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 
 interface PaginationProps {
-  usersCount: number;
+  usersCount: number; // total number of filtered users
   currentPage: number;
   pageSize: number;
   onPageChange: (page: number) => void;
@@ -15,13 +17,28 @@ const Pagination: React.FC<PaginationProps> = ({
 }) => {
   const totalPages = Math.ceil(usersCount / pageSize);
 
-  if (totalPages === 1) return null;
+  if (totalPages <= 1) return null; // no pagination needed
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="d-flex justify-content-center align-items-center">
+    <div className="d-flex justify-content-center align-items-center mt-3">
       <ul className="pagination">
+        {/* Previous button */}
+        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+          <a
+            href="#"
+            className="page-link"
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage > 1) onPageChange(currentPage - 1);
+            }}
+          >
+            Previous
+          </a>
+        </li>
+
+        {/* Page numbers */}
         {pages.map((page) => (
           <li
             key={page}
@@ -30,7 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({
             <a
               href="#"
               className="page-link"
-              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+              onClick={(e) => {
                 e.preventDefault();
                 onPageChange(page);
               }}
@@ -39,6 +56,20 @@ const Pagination: React.FC<PaginationProps> = ({
             </a>
           </li>
         ))}
+
+        {/* Next button */}
+        <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+          <a
+            href="#"
+            className="page-link"
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage < totalPages) onPageChange(currentPage + 1);
+            }}
+          >
+            Next
+          </a>
+        </li>
       </ul>
     </div>
   );

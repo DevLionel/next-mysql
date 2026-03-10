@@ -1,75 +1,67 @@
+"use client";
+
 import User from "../component/User";
-import type { UserType } from "../component/User";
+import useAppContext from "@/context/useAppContext";
+import type { UserType } from "@/app/types/user";
 
 type Props = {
-  users: UserType[];
-  onDeleteClick: (user: UserType) => void;
-  onEditClick: (user: UserType) => void;
   checkedUserIds: number[];
-  setCheckedUserIds: React.Dispatch<React.SetStateAction<number[]>>; 
+  setCheckedUserIds: React.Dispatch<React.SetStateAction<number[]>>;
+  onEditClick: (user: UserType) => void;
+  onDeleteClick: (user: UserType) => void;
+  users: UserType[];
 };
 
-function UsersTable({ users = [], onEditClick, onDeleteClick, checkedUserIds = [], setCheckedUserIds }: Props) {
-
-  const toggleUser = (userId: number) => {
-    if (checkedUserIds.includes(userId)) {
-      setCheckedUserIds(prev => prev.filter(id => id !== userId));
-    } else {
-      setCheckedUserIds(prev => [...prev, userId]);
-    }
-  };
-
+function UsersTable({ users, checkedUserIds = [], setCheckedUserIds, onEditClick, onDeleteClick }: Props) {
+   // Toggle "Select All" checkbox
   const toggleSelectAll = () => {
     if (checkedUserIds.length === users.length) {
       setCheckedUserIds([]);
     } else {
-      setCheckedUserIds(users.map(u => Number(u.id)));
+      setCheckedUserIds(users.map((u) => u.id));
     }
   };
 
+  // ✅ userGenerator function keeps generating <User> rows
   const userGenerator = () => {
     return (
       <>
-        {users.map(user => {
-          return (
-            <User 
-              key={user.id} 
-              user={user} 
-              isChecked={checkedUserIds.includes(user.id)}
-              onCheckboxChange={() => toggleUser(user.id)}
-              onEditClick={onEditClick}
-              onDeleteClick={onDeleteClick}
-            />
-          );
-        })}
+        {users.map((user) => (
+          <User
+            key={user.id}
+            user={user}
+            isChecked={checkedUserIds.includes(user.id)}
+            setCheckedUserIds={setCheckedUserIds} // ✅ passes setter for checkbox
+            onEditClick={onEditClick} 
+            onDeleteClick={onDeleteClick}
+          />
+        ))}
       </>
     );
   };
 
   return (
-    <>
-      <table className="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>
-              <span className="custom-checkbox">
-                <input type="checkbox" id="selectAll"
-                  checked={checkedUserIds.length > 0 && checkedUserIds.length === users.length}
-                  onChange={toggleSelectAll} 
-                />
-                <label htmlFor="selectAll" />
-              </span>
-            </th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userGenerator()}
-        </tbody>
-      </table>
-    </>
+    <table className="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>
+            <span className="custom-checkbox">
+              <input
+                type="checkbox"
+                id="selectAll"
+                checked={checkedUserIds.length > 0 && checkedUserIds.length === users.length}
+                onChange={toggleSelectAll}
+              />
+              <label htmlFor="selectAll" />
+            </span>
+          </th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>{userGenerator()}</tbody>
+    </table>
   );
 }
 

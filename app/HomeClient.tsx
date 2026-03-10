@@ -1,215 +1,189 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../component/Navbar";
 import AddEmployeeModal from "./modals/AddEmployeeModal";
-import DeleteEmployeeModal from "./modals/DeleteEmployeeModal";
 import EditEmployeeModal from "./modals/EditEmployeeModal";
-import AppContext from "../context/appContext";
+import DeleteEmployeeModal from "./modals/DeleteEmployeeModal";
 import UsersTable from "../component/UsersTable";
-import { paginate } from "../helpers/paginate";
-import { search } from "../helpers/search";
 import Pagination from "../component/Pagination";
 import Alert from "../component/Alert";
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-}
+import { paginate } from "../helpers/paginate";
+import { search } from "../helpers/search";
+import useAppContext from "../context/useAppContext";
+import type { UserType } from "@/app/types/user";
 
 export default function HomeClient() {
-  const [showAddEmployeeAlert, setShowAddEmployeeAlert] = useState<boolean>(false);
-  const [showEditEmployeeAlert, setShowEditEmployeeAlert] = useState<boolean>(false);
-  const [showDeleteEmployeeAlert, setShowDeleteEmployeeAlert] = useState<boolean>(false);
-
-  const [myUsers, setMyUsers] = useState<User[]>([]);
+  const { users, setUsers } = useAppContext();
   const [checkedUserIds, setCheckedUserIds] = useState<number[]>([]);
-
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 10;
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [userToEdit, setUserToEdit] = useState<User | null>(null);
+  // Modals
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [userToEdit, setUserToEdit] = useState<UserType | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  // Alerts
+  const [showAddAlert, setShowAddAlert] = useState(false);
+  const [showEditAlert, setShowEditAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
-  // fetch users
+  const [showBulkDeleteAlert, setShowBulkDeleteAlert] = useState(false);
+
+  // Fetch users
   useEffect(() => {
     fetch("/api/users")
-      .then((res) => res.json())
-      .then((data: User[]) => setMyUsers(data));
-  }, []);
+      .then(res => res.json())
+      .then((data: UserType[]) => setUsers(data))
+      .catch(err => console.error(err));
+  }, [setUsers]);
 
+  // Set current page
+  useEffect(() => {
+  setCurrentPage(1); // reset to page 1 whenever search query changes
+  }, [searchQuery]);
+
+  // Add new user
   const handleSaveEmployee = async (data: { username: string; email: string }) => {
-    const response = await fetch("/api/users", {
+    // Client-side duplicate check
+    if (users.some(u => u.email === data.email)) {
+      alert("This email address is already used.");
+    return;
+    }
+    
+    const res = await fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-
-    const responseData = await response.json();
-    const newUser: User = responseData.newUser;
-
-    if (!newUser?.id || !newUser?.username || !newUser?.email) {
-      console.error("Invalid user object:", newUser);
-      return;
+    
+    if (!res.ok) {
+     alert("Failed to add user");
+    return;
     }
+    
+    const result = await res.json();
+    const newUser: UserType = result.newUser;
+    if (!newUser?.id) return;
 
-    setMyUsers((prev) => [...prev, newUser]);
-
-    setShowAddEmployeeAlert(true);
-    setTimeout(() => setShowAddEmployeeAlert(false), 10000);
+    setUsers(prev => [...prev, newUser]);
+    setShowAddAlert(true);
+    setTimeout(() => setShowAddAlert(false), 5000);
   };
 
-  let searchedResult: User[] = [];
-  let paginatedUsers: User[] = [];
-
-  if (searchQuery.length > 0) {
-    searchedResult = search(myUsers, searchQuery);
-    paginatedUsers = paginate(searchedResult, currentPage, pageSize);
-  } else {
-    paginatedUsers = paginate(myUsers, currentPage, pageSize);
-  }
-
-  const handleEditUser = async (
-    userId: number,
-    data: { username: string; email: string }
-  ) => {
-    const response = await fetch(`/api/users/${userId}`, {
+  // Edit user
+  const handleEditUser = async (userId: number, data: { username: string; email: string }) => {
+    // Client-side duplicate check (ignore current user)
+    if (users.some(u => u.email === data.email && u.id !== userId)) {
+      alert("This email address is already used.");
+    return;
+    }
+    
+    const res = await fetch(`/api/users/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-
-    const responseData = await response.json();
-    const editUser: User = responseData.result;
-
-    if (!editUser?.id || !editUser?.username || !editUser?.email) {
-      console.error("Invalid user object:", editUser);
-      return;
+    
+    if (!res.ok) {
+      alert("Failed to edit user");
+    return;
     }
+    
+    const result = await res.json();
+    const updatedUser: UserType = result.result;
 
-    setMyUsers((prev) =>
-      prev.map((u) => (u.id === editUser.id ? editUser : u))
-    );
-
-    setShowEditEmployeeAlert(true);
-    setTimeout(() => setShowEditEmployeeAlert(false), 10000);
+    setUsers(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
+    setShowEditAlert(true);
+    setTimeout(() => setShowEditAlert(false), 5000);
   };
 
-  const handleDeleteUser = async (userId: number) => {
-    await fetch(`/api/users/${userId}`, { method: "DELETE" });
-
-    setMyUsers((prev) => prev.filter((user) => user.id !== userId));
-
-    setIsDeleteModalOpen(false);
-
-    setShowDeleteEmployeeAlert(true);
-    setTimeout(() => setShowDeleteEmployeeAlert(false), 10000);
+  const handleDeleteClick = async (user: UserType) => {
+    setUserToDelete(user);
+    setIsDeleteModalOpen(true); // open modal
   };
+
+  // Pagination + search
+  const filteredUsers = searchQuery.length > 0 ? search(users, searchQuery) : users;
+  const paginatedUsers = paginate(filteredUsers, currentPage, pageSize);
 
   return (
     <div className="container-xl">
       <div className="table-responsive d-flex flex-column">
         <main>
-          <AppContext.Provider
-            value={{
-              users: myUsers,
-              setMyUsers: setMyUsers,
+          {/* Alerts */}
+          {showAddAlert && <Alert message="User added successfully!" type="success" onClose={() => setShowAddAlert(false)} />}
+          {showEditAlert && <Alert message="User edited successfully!" type="success" onClose={() => setShowEditAlert(false)} />}
+          {showDeleteAlert && <Alert message="User deleted successfully!" type="success" onClose={() => setShowDeleteAlert(false)} />}
+          {showBulkDeleteAlert && (<Alert message="Selected users deleted successfully!" type="success" onClose={() => setShowBulkDeleteAlert(false)} />)}
+
+          {/* Navbar */}
+          <Navbar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onAddClick={() => setIsAddModalOpen(true)}
+            checkedUserIds={checkedUserIds}
+            setCheckedUserIds={setCheckedUserIds}
+            onBulkDelete={() => {
+              setUsers(prev => prev.filter(u => !checkedUserIds.includes(u.id)));
+              setCheckedUserIds([]);
+              setShowBulkDeleteAlert(true);
+              setTimeout(() => setShowBulkDeleteAlert(false), 5000);
             }}
-          >
-            {showAddEmployeeAlert && (
-              <Alert
-                message="User added successfully!"
-                type="success"
-                onClose={() => setShowAddEmployeeAlert(false)}
-              />
-            )}
-
-            {showEditEmployeeAlert && (
-              <Alert
-                message="User edited successfully!"
-                type="success"
-                onClose={() => setShowEditEmployeeAlert(false)}
-              />
-            )}
-
-            {showDeleteEmployeeAlert && (
-              <Alert
-                message="User deleted successfully!"
-                type="success"
-                onClose={() => setShowDeleteEmployeeAlert(false)}
-              />
-            )}
-
-            <Navbar
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              onAddClick={() => setIsModalOpen(true)}
-              checkedUserIds={checkedUserIds}
-              setCheckedUserIds={setCheckedUserIds}
-              myUsers={myUsers}
-              handleDeleteUser={handleDeleteUser}
-            />
-
-            {isModalOpen && (
-              <AddEmployeeModal
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleSaveEmployee}
-              />
-            )}
-
-            {isEditModalOpen && userToEdit && (
-              <EditEmployeeModal
-                initialUsername={userToEdit.username}
-                initialEmail={userToEdit.email}
-                userId={userToEdit.id}
-                onClose={() => {
-                  setUserToEdit(null);
-                  setIsEditModalOpen(false);
-                }}
-                onEdit={handleEditUser}
-              />
-            )}
-
-            {isDeleteModalOpen && userToDelete && (
-              <DeleteEmployeeModal
-                username={userToDelete.username}
-                onClose={() => {
-                  setUserToDelete(null);
-                }}
-                onDelete={() => handleDeleteUser(userToDelete.id)}
-              />
-            )}
-
-            <UsersTable
-              users={paginatedUsers}
-              onDeleteClick={(user: User) => {
-                setUserToDelete(user);
-                setIsDeleteModalOpen(true);
+          />
+          {/* Modals */}
+          {isAddModalOpen && <AddEmployeeModal onClose={() => setIsAddModalOpen(false)} 
+              onSave={handleSaveEmployee} 
+              existingUsers={users} />}
+          {isEditModalOpen && userToEdit && (
+            <EditEmployeeModal
+              userId={userToEdit.id}
+              initialUsername={userToEdit.username}
+              initialEmail={userToEdit.email}
+              onClose={() => {
+                setUserToEdit(null);
+                setIsEditModalOpen(false);
               }}
-              onEditClick={(user: User) => {
-                setUserToEdit(user);
-                setIsEditModalOpen(true);
+              onEdit={handleEditUser}
+              existingUsers={users}
+            />
+          )}
+          {isDeleteModalOpen && userToDelete && (
+            <DeleteEmployeeModal
+              username={userToDelete.username}
+              onClose={() => setUserToDelete(null)}
+              onDelete={() => {
+                setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
+                setIsDeleteModalOpen(false);
+                setShowDeleteAlert(true);
+                setTimeout(() => setShowDeleteAlert(false), 5000);
               }}
-              checkedUserIds={checkedUserIds}
-              setCheckedUserIds={setCheckedUserIds}
             />
+          )}
 
-            <Pagination
-              usersCount={
-                searchQuery.length > 0 ? searchedResult.length : myUsers.length
-              }
-              currentPage={currentPage}
-              pageSize={pageSize}
-              onPageChange={setCurrentPage}
-            />
-          </AppContext.Provider>
+          {/* Users table */}
+          <UsersTable
+            users={paginatedUsers}
+            checkedUserIds={checkedUserIds}
+            setCheckedUserIds={setCheckedUserIds}
+            onEditClick={(user) => {
+              setUserToEdit(user);
+              setIsEditModalOpen(true);
+            }}
+            onDeleteClick={handleDeleteClick}
+          />
+
+          {/* Pagination */}
+          <Pagination
+            usersCount={filteredUsers.length} // total items after search
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+          />
         </main>
       </div>
     </div>
