@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
     return NextResponse.json({ user, success: true }, { status: 200 });
 }
 
-export async function PUT(req: NextRequest, res: NextResponse, context: { params: Promise<{ id: string}> }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string}> }) {
   try { 
     const { id } = await context.params;
 
