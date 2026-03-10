@@ -19,6 +19,10 @@
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
+  "engines": {
+  "nodes": "20.x",
+  "npm": "10.x"
+  },
   "devDependencies": {
     "@types/node": "^25.2.3",
     "@types/pg": "^8.16.0",
@@ -35,4 +39,5 @@
   "author": "",
   "license": "ISC",
   "type": "module"
+
 }
