@@ -107,47 +107,52 @@ table.table .avatar {
 
 @media (max-width: 768px) {
 
-	body {
-		font-size: 14px;
-	}
-
-	.table-title {
-		padding: 15px;
-		text-align: center;
-	}
-
-	.table-title h2 {
-		font-size: 18px;
-	}
-
-	.table-title .btn-group {
-		float: none;
-		margin-top: 10px;
-	}
-
-	.table-wrapper {
-		padding: 15px;
-	}
-
-	table.table tr th,
-	table.table tr td {
-		padding: 8px;
-		font-size: 12px;
-	}
-
-	.modal-content-custom {
-		width: 95%;
-	}
-
+	.custom-table thead {
+    display: none;
 }
 
-@media (max-width: 576px) {
-	.table-title .btn {
-		display: block;
-		width: 100%;
-		margin: 5px 0;
-		float: none;
-	}
+.custom-table,
+.custom-table tbody,
+.custom-table tr,
+.custom-table td {
+    display: block;
+    width: 100%;
+}
+
+.custom-table tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.custom-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+}
+
+.custom-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    width: 45%;
+    font-weight: bold;
+    text-align: left;
+    color: #555;
+}
+
+.custom-table tr {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.custom-table tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
 }
 
 .pagination {
