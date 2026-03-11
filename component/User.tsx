@@ -24,11 +24,6 @@ export default function User({ user, isChecked, setCheckedUserIds, onEditClick, 
     }
   };
 
-  // Delete user directly via context
-  const handleDelete = () => {
-    setUsers(users.filter((u) => u.id !== user.id));
-  };
-
   return (
     <tr>
       <td>

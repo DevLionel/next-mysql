@@ -1,7 +1,6 @@
 "use client";
 
 import User from "../component/User";
-import useAppContext from "@/context/useAppContext";
 import type { UserType } from "@/app/types/user";
 
 type Props = {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { isValidEmail, isDuplicateEmail } from "@/helpers/validation";
 import type { UserType } from "@/app/types/user";
 
