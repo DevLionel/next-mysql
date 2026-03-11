@@ -6,12 +6,15 @@ body {
 }
 .table-responsive {
     margin: 10px 0;
+	overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 .table-wrapper {
 	background: #fff;
 	padding: 20px 25px;
 	border-radius: 3px;
-	min-width: 1000px;
+	width: 100%;
+	min-width: 0;
 	box-shadow: 0 1px 1px rgba(0,0,0,.05);
 }
 .table-title {        
@@ -74,7 +77,7 @@ table.table th i {
 }	
 table.table td:last-child i {
 	opacity: 0.9;
-	font-size: 22px;
+	font-size: 18px;
 	margin: 0 5px;
 }
 table.table td a {
@@ -101,6 +104,52 @@ table.table .avatar {
 	vertical-align: middle;
 	margin-right: 10px;
 }
+
+@media (max-width: 768px) {
+
+	body {
+		font-size: 14px;
+	}
+
+	.table-title {
+		padding: 15px;
+		text-align: center;
+	}
+
+	.table-title h2 {
+		font-size: 18px;
+	}
+
+	.table-title .btn-group {
+		float: none;
+		margin-top: 10px;
+	}
+
+	.table-wrapper {
+		padding: 15px;
+	}
+
+	table.table tr th,
+	table.table tr td {
+		padding: 8px;
+		font-size: 12px;
+	}
+
+	.modal-content-custom {
+		width: 95%;
+	}
+
+}
+
+@media (max-width: 576px) {
+	.table-title .btn {
+		display: block;
+		width: 100%;
+		margin: 5px 0;
+		float: none;
+	}
+}
+
 .pagination {
 	float: right;
 	margin: 0 0 5px;
